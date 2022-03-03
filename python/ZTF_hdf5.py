@@ -86,6 +86,13 @@ class Write_LightCurve:
                                                   overwrite=True, serialize_meta=True)
     
     def Tab_metaRejected(self, lc):
+        """
+        Parameters
+        ----------
+        lc : LightcurveCollection
+            List of AstropyTable with simulated lightcurve.
+        """
+        
         meta_rej = Table(lc.meta_rejected)
         r = []
         for i, row in enumerate(meta_rej):

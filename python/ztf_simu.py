@@ -14,6 +14,24 @@ class Simul_lc:
     
     def __init__(self, folder_dir,  z_range=(0.01, 0.1), dec_range=(-30, 90), n_det=1, 
                  ntransient=11, seed=70, threshold=1):
+        """
+        Parameters
+        ----------
+        folder_dir : str
+            Name of the folder directory to find sfd98 file.
+        z_range : (int,int)
+            redshift range (default=(0.01, 0.1)).
+        dec_range : (int,int)
+            declinaison range for observation (default=(-30, 90)).
+        n_det : int
+            required number of detections (default=1).
+        n_transient : int
+            we can change the number of transientor the rate (default=11).
+        seed : int
+            default=70
+        threshold : int
+            S/N requirement for detection (default=1).
+        """
         
         self.folder_dir = folder_dir
         self.z_range = z_range
@@ -30,23 +48,37 @@ class Simul_lc:
         self.obs = pd.read_csv('data/2018_all_logs_from_dr1_rcid_zp_from_masci.csv')
         
     def simul_lc(self, ntrans=False):
+        """
+        Parameters
+        ----------
+        ntrans : bool, ops
+            You can choose not to define ntransient, in which case the maximum number of simulated light curves will be 7354 with             the other default values (default=False).
+            
+        Return
+        ------
+        lc : LightcurveCollection
+            Collection of simulated light curve, to cheak the firt lc : lc[0]
+        """
             
         self.obs[self.obs['rcid']==26]
         self.obs['field'] = self.obs['field'].astype('int64')
         self.obs['time'] = self.obs['time'] - 2400000.5
         
         plan = simsurvey.SurveyPlan(time=self.obs['time'], band=self.obs['band'], zp=self.obs['zp'], obs_field=self.obs['field'],
-                                obs_ccd=self.obs['rcid'],skynoise=self.obs['skynoise'], 
-                                fields={k: v for k, v in self.fields.items() if k in ['ra', 'dec', 'field_id', 'width', 'height']}, ccds=self.ccds)
+                                      obs_ccd=self.obs['rcid'],skynoise=self.obs['skynoise'], 
+                                fields={k: v for k, v in self.fields.items() if k in ['ra', 'dec', 'field_id', 'width','height']}, 
+                                      ccds=self.ccds)
         
         mjd_range = (plan.cadence['time'].min()- 30, plan.cadence['time'].max() + 30)
         
         if not ntrans:
-            tr = simsurvey.get_transient_generator(zrange=self.z_range, transient='Ia', template='salt2', dec_range=self.dec_range,
-                     mjd_range=mjd_range, sfd98_dir=self.sfd98_dir, ntransient=self.ntransient, seed=self.seed)
+            tr = simsurvey.get_transient_generator(zrange=self.z_range, transient='Ia', template='salt2',
+                                                   dec_range=self.dec_range, mjd_range=mjd_range, sfd98_dir=self.sfd98_dir,
+                                                   ntransient=self.ntransient, seed=self.seed)
         else:
-            tr = simsurvey.get_transient_generator(zrange=self.z_range, transient='Ia', template='salt2', dec_range=self.dec_range,
-                     mjd_range=mjd_range, sfd98_dir=self.sfd98_dir, seed=self.seed)
+            tr = simsurvey.get_transient_generator(zrange=self.z_range, transient='Ia', template='salt2',
+                                                   dec_range=self.dec_range,
+                                                   mjd_range=mjd_range, sfd98_dir=self.sfd98_dir, seed=self.seed)
             
         survey = simsurvey.SimulSurvey(generator=tr, plan=plan, 
                                        n_det=self.n_det, threshold=self.threshold)
