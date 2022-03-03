@@ -15,13 +15,22 @@ class SN_fit:
         ----------
         lc : AstropyTable
             AstropyTable of your selecting light curve.
+        z_bounds : dict
+            redshift range for the fit (default = {'z':(0.01, 0.1)}).
         """
+        
         self.lc = lc
         self.model = sncosmo.Model(source='salt2')
         self.param = ['z', 't0', 'x0', 'x1', 'c']
         self.z_bounds = z_bounds
     
     def fit_sn(self):
+        """
+        Return
+        ------
+        result, fitted_model : class sncosmo
+            result of the fit with sncosmo.
+        """
         try:
             result, fitted_model = sncosmo.fit_lc(self.lc, self.model, self.param, bounds=self.z_bounds)
             return result, fitted_model
