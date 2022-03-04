@@ -34,12 +34,16 @@ class SN_fit:
         try:
             result, fitted_model = sncosmo.fit_lc(self.lc, self.model, self.param, bounds=self.z_bounds)
             return result, fitted_model
+            
         except:
-            return print("WARNING : That was no valid light curve.")
+            print("WARNING : That was no valid light curve.")
     
     def plot_sn(self):
-        fit = self.fit_sn()
-        return sncosmo.plot_lc(self.lc, model=fit[1], errors=fit[0].errors)
+        result, fitted_model = self.fit_sn()
+        try:
+            return sncosmo.plot_lc(self.lc, model=fitted_model, errors=result.errors)
+        except:
+            print("No plot for this light curve")
     
     def info(self):
         result = self.fit_sn()[0]

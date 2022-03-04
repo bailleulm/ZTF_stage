@@ -92,15 +92,17 @@ class Write_LightCurve:
         lc : LightcurveCollection
             List of AstropyTable with simulated lightcurve.
         """
-        
-        meta_rej = Table(lc.meta_rejected)
-        r = []
-        for i, row in enumerate(meta_rej):
-            path = 'bad_{}'.format(i)
-            r.append(path)
-            c = Column(r)
-        meta_rej.add_column(c, name='path')
-        return meta_rej
+        if lc.meta_rejected is not None:
+            meta_rej = Table(lc.meta_rejected)
+            r = []
+            for i, row in enumerate(meta_rej):
+                path = 'bad_{}'.format(i)
+                r.append(path)
+                c = Column(r)
+            meta_rej.add_column(c, name='path')
+            return meta_rej
+        else:
+            print("No lc rejected")
 
 # In[255]:
 
