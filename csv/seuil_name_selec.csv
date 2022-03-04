@@ -1,0 +1,8 @@
+seuil,name_selec
+4,nb_phase<0
+10,nb_phase>0
+1,nb_phase<-10
+1,nb_phase>20
+0,nb_band_ztfr
+0,nb_band_ztfg
+0,nb_band_ztfi

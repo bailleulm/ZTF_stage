@@ -1,0 +1,8 @@
+col,lim_col,type,op1
+phase,0,int,operator.le
+phase,0,int,operator.ge
+phase,-10,int,operator.le
+phase,20,int,operator.ge
+band,ztfr,str,operator.eq
+band,ztfg,str,operator.eq
+band,ztfi,str,operator.eq
