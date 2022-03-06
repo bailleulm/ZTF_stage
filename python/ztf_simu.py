@@ -52,7 +52,7 @@ class Simul_lc:
         """
         survey = self.simul
         print(survey)
-        lc = survey.get_lightcurves(progress_bar=True, notebook=True)
+        lc = survey.get_lightcurves()
         
         return lc
         
