@@ -3,12 +3,6 @@ from ztf_simu import Simul_lc
 from ZTF_hdf5 import Write_LightCurve, Read_LightCurve, Plot_LightCurve
 
 parser = OptionParser()
-parser.add_option("--visitsDir", type=str, default='visits_files',
-                  help="directory where visits files are located[%default]")
-parser.add_option("--cosmoDir", type=str, default='cosmo_files_yearly_zspectro_x1c_1sigma_uy',
-                  help="directory where cosmo files are located[%default]")
-parser.add_option('--cadence', type=int, default=1,
-                  help='cadence of observation[%default]')
 
 ## Folder directory and Files names ##
 parser.add_option('--folder_dir', type=str, default='/Users/manon/ZTF/data/',
@@ -19,7 +13,7 @@ parser.add_option('--rcidFile', type=str, default='ZTF_corners_rcid.txt',
                   help='rcid file name [%default]')
 parser.add_option('--csvFile', type=str, default='2018_all_logs_from_dr1_rcid_zp_from_masci.csv',
                   help='csv file name for observation [%default]')
-
+ 
 parser.add_option('--DataFile', type=str, default='Data',
                   help='csv file name for observation [%default]')
 parser.add_option('--MetaFileName', type=str, default='Meta.hdf5',
@@ -46,11 +40,6 @@ parser.add_option('--threshold', type=int, default=1,
 
 opts, args = parser.parse_args()
 
-visitsDir = opts.visitsDir
-cosmoDir = opts.cosmoDir
-cadence = opts.cadence
-zmin = opts.zmin
-
 folder_dir = opts.folder_dir
 sfd98File = opts.sfd98File
 rcidFile = opts.rcidFile
@@ -68,7 +57,8 @@ seed = opts.seed
 threshold = opts.threshold
 
 lc = Simul_lc(folder_dir=folder_dir, sfd98File=sfd98File, rcidFile=rcidFile, 
-                csvFile =csvFile, z_range=(zmin, zmax), dec_range=(decmin, decmax), n_det=ndet, ntransient=ntransient, seed=seed, threshold=threshold)()
+                csvFile =csvFile, z_range=(zmin, zmax), dec_range=(decmin, decmax),
+                  n_det=ndet, ntransient=ntransient, seed=seed, threshold=threshold)()
 
 Write = Write_LightCurve()
 data = Write.write_data(DataFile, lc)
@@ -81,4 +71,5 @@ if lc.meta_rejected is not None:
     meta_rej = Write.Tab_metaRejected(lc)
     for i, rows in enumerate(meta_rej):
         read_meta.add_row(rows)
-print(read_meta)
+
+print("Successfully simulated light curve ")
