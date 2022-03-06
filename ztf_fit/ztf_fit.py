@@ -9,7 +9,7 @@ import sncosmo
 class SN_fit:
     "Definition of a class fit lightcurve"
     
-    def __init__(self,lc, z_bounds={'z':(0.01, 0.1)}):
+    def __init__(self,lc):
         """
         Parameters
         ----------
@@ -22,7 +22,7 @@ class SN_fit:
         self.lc = lc
         self.model = sncosmo.Model(source='salt2')
         self.param = ['z', 't0', 'x0', 'x1', 'c']
-        self.z_bounds = z_bounds
+        self.z_bounds = {'z':(lc.meta['z']-0.001, lc.meta['z']+0.001)}
     
     def fit_sn(self):
         """
