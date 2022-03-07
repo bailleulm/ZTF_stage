@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[91]:
-
-
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[253]:
-
-
 import h5py
 import ast
 from astropy.table import QTable, Table, Column, vstack
@@ -26,34 +14,41 @@ import os
 class Write_LightCurve:
     "Definition of a class that records light curves and/or their meta data in an hdf5 file"
 
-    def __init__(self, outputDir='dataLC', file_data='Data.hdf5', file_meta='Meta.hdf5'):
+    def __init__(self, outputDir='dataLC', file_data='Data.hdf5', file_meta='Meta.hdf5', path_prefix='SN'):
         """
         Parameters
-        ----------
-        file_data : str, ops
+        --------------
+        outputDir: str, opt
+          output directory (default: dataLC)
+        file_data : str, opt
             Name of the data file that you want to write (default='Data.hdf5').
-        file_meta : str, ops
+        file_meta : str, opt
             Name of the meta data file that you want to write (default='Meta.hdf5').
+        path_prefix: str, opt
+          prefix for the path in hdf5 files (default: SN)
         """
 
         self.Summary = Table()
         self.List = ['z', 't0', 'x0', 'x1', 'c', 'mwebv',
                      'ra', 'dec', 'mwebv_sfd98', 'idx_orig']
-        home_dir = os.environ.get('HOME')
-        folder_dir = os.path.join(home_dir, outputDir)
-        data_dir = os.path.join(folder_dir, file_data)
-        self.meta_dir = os.path.join(folder_dir, file_meta)
 
-        if not os.path.exists(folder_dir):
-            os.makedirs(folder_dir)
-        elif (os.path.isfile(data_dir) and os.path.isfile(self.meta_dir)):
-            os.remove(data_dir)
-            os.remove(self.meta_dir)
+        self.outputDir = outputDir
+        self.path_prefix = path_prefix
 
-        self.file_data = h5py.File('{}/{}'.format(folder_dir, file_data), 'w')
-        self.file_meta = h5py.File('{}/{}'.format(folder_dir, file_meta), 'w')
+        self.meta_file = os.path.join(self.outputDir, file_meta)
+        self.data_file = os.path.join(self.outputDir, file_data)
 
-    def write_data(self, path, lc, serialize_meta=True):
+        if not os.path.exists(self.outputDir):
+            os.makedirs(self.outputDir)
+        if os.path.isfile(self.data_file):
+            os.remove(self.data_file)
+        if os.path.isfile(self.meta_file):
+            os.remove(self.meta_file)
+
+        self.file_data = h5py.File('{}'.format(self.data_file), 'w')
+        self.file_meta = h5py.File('{}'.format(self.meta_file), 'w')
+
+    def write_data(self, lc, path='SN', serialize_meta=True):
         """
         Parameters
         ----------
@@ -62,7 +57,6 @@ class Write_LightCurve:
         lc : LightcurveCollection
             List of AstropyTable with simulated lightcurve.
         """
-
         if isinstance(lc, astropy.table.table.Table):
             meta = lc.meta
             lc.meta = dict(zip(self.List, [meta[k] for k in self.List]))
@@ -78,36 +72,33 @@ class Write_LightCurve:
         else:
             print('lc is not an astropy.table.table.Table type', type(lc))
             for i, lc_b in enumerate(lc):
-                self.write_data('SN_{}'.format(i), lc_b)
+                path = '{}_{}'.format(self.path_prefix, i)
+                self.write_data(lc_b, path)
+            self.write_meta(lc.meta_rejected)
 
-    def write_meta(self):
-        self.Summary.meta["directory"] = self.meta_dir
-        self.Summary.meta["file_name"] = 'Meta.dhf5'
-        print(self.Summary.meta)
+    def write_meta(self, meta_rej):
+        """
+        write meta data in hdf5 file
+
+        Parameters
+        ---------------
+        meta_rej: numpy array
+          metadata of rejected LC (i.e. not simulated)
+
+        """
+        if meta_rej is not None:
+            meta_rej = Table(meta_rej)
+            pp = ['bad_{}'.format(i) for i in range(len(meta_rej))]
+            col = Column(pp, name='path')  # shape=(2,)
+            meta_rej.add_column(col)
+            self.Summary = vstack([self.Summary, meta_rej])
+
+        self.Summary.meta["directory"] = self.outputDir
+        self.Summary.meta["file_name"] = self.meta_file
+        print('meta data', self.Summary.meta, self.Summary)
 
         astropy.io.misc.hdf5.write_table_hdf5(self.Summary, self.file_meta, path='meta', append=True,
                                               overwrite=True, serialize_meta=True)
-
-    def Tab_metaRejected(self, lc):
-        """
-        Parameters
-        ----------
-        lc : LightcurveCollection
-            List of AstropyTable with simulated lightcurve.
-        """
-        if lc.meta_rejected is not None:
-            meta_rej = Table(lc.meta_rejected)
-            r = []
-            for i, row in enumerate(meta_rej):
-                path = 'bad_{}'.format(i)
-                r.append(path)
-                c = Column(r)
-            meta_rej.add_column(c, name='path')
-            return meta_rej
-        else:
-            print("No lc rejected")
-
-# In[255]:
 
 
 class Read_LightCurve:
