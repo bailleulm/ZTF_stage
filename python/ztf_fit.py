@@ -74,8 +74,15 @@ class SN_fit:
         
 
 class SN_fit_tab:
+    "Definition of a class which add different result from sncosmo.fit_lc to your meta data file"
     
     def __init__(self, metaFile):
+        """
+        Parameters
+        ----------
+        metaFile : AstropyTable
+            AstropyTable of the meta data of your selected light curve (pass selec == 1).
+        """
         
         self.metaFile = metaFile
         self.keys = []
@@ -83,6 +90,12 @@ class SN_fit_tab:
         self.list2 = ['z_fit', 't0_fit', 'x0_fit', 'x1_fit', 'c_fit']
     
     def table_param(self):
+        """
+        Return
+        ------
+        t : Table
+            Table with the different parameters on list_param that you generate with sncosmo.fit_lc.
+        """
         t = []
         for i, row in enumerate(self.metaFile):
             path = row['path']
@@ -107,6 +120,12 @@ class SN_fit_tab:
         return t
     
     def addto_meta(self):
+        """
+        Return
+        ------
+        new_meta : AstropyTable
+            AstropyTable with starting meta data and fitted meta data (and the different parameters on list_param).
+        """
         
         fit_param = self.table_param()
         new_meta = self.metaFile

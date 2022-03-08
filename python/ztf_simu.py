@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import simsurvey_tools as sst
 import pandas as pd
 import simsurvey
