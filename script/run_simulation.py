@@ -1,3 +1,8 @@
+import sys
+sys.path.append("/Users/manon/ztf_stage/python") #directory to your python class
+sys.path.append("/Users/manon/ZTF") #directory to your data (from simsurvey)
+sys.path.append("/Users/manon/ZTF/data") #directory to your data (from simsurvey)
+
 from optparse import OptionParser
 from ztf_simu import Simul_lc
 from ztf_hdf5 import Write_LightCurve, Read_LightCurve, Plot_LightCurve
@@ -63,8 +68,7 @@ threshold = opts.threshold
 
 # lc simulation
 lc = Simul_lc(folder_dir=folder_dir, sfd98File=sfd98File, rcidFile=rcidFile,
-              csvFile=csvFile, z_range=(
-                  zmin, zmax), dec_range=(decmin, decmax),
+              csvFile=csvFile, z_range=(zmin, zmax), dec_range=(decmin, decmax),
               n_det=ndet, ntransient=ntransient, seed=seed, threshold=threshold)()
 
 # write LC and metadata
