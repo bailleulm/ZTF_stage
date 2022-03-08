@@ -6,7 +6,7 @@ import numpy as np
 class SN_fit:
     "Definition of a class fit lightcurve"
     
-    def __init__(self,lc, list_param = ['z', 'z_err', 't0', 't0_err', 'x0', 'x0_err', 'x1', 'x1_err', 'c', 'c_err',
+    def __init__(self, lc, list_param = ['z', 'z_err', 't0', 't0_err', 'x0', 'x0_err', 'x1', 'x1_err', 'c', 'c_err',
                                        'chisq', 'ndof', 'z_t0_cov', 'z_x0_cov', 'z_x1_cov', 'z_c_cov',
                                        'x0_t0_cov','x0_x1_cov', 'x0_c_cov', 't0_x1_cov', 't0_c_cov', 'x1_c_cov']):
         """
@@ -76,15 +76,17 @@ class SN_fit:
 class SN_fit_tab:
     "Definition of a class which add different result from sncosmo.fit_lc to your meta data file"
     
-    def __init__(self, metaFile):
+    def __init__(self, metaTable, dataFile, inputDir = 'ZTF/dataLC'):
         """
         Parameters
         ----------
-        metaFile : AstropyTable
+        metaTable : AstropyTable
             AstropyTable of the meta data of your selected light curve (pass selec == 1).
         """
         
-        self.metaFile = metaFile
+        self.metaTable = metaTable
+        self.dataFile = dataFile
+        self.inputDir = inputDir
         self.keys = []
         self.list1 = ['z', 't0', 'x0', 'x1', 'c']
         self.list2 = ['z_fit', 't0_fit', 'x0_fit', 'x1_fit', 'c_fit']
@@ -97,10 +99,10 @@ class SN_fit_tab:
             Table with the different parameters on list_param that you generate with sncosmo.fit_lc.
         """
         t = []
-        for i, row in enumerate(self.metaFile):
+        for i, row in enumerate(self.metaTable):
             path = row['path']
             self.keys.append(path)
-            data = Read_LightCurve(file_name='Data.hdf5')
+            data = Read_LightCurve(file_name=self.dataFile, inputDir=self.inputDir)
             lc = data.Read_file(path=path)
         
             fit = SN_fit(lc)
@@ -128,7 +130,7 @@ class SN_fit_tab:
         """
         
         fit_param = self.table_param()
-        new_meta = self.metaFile
+        new_meta = self.metaTable
         for i, col in enumerate(fit_param.columns):
             if col == 'path':
                 new_meta[col] = fit_param[col]
