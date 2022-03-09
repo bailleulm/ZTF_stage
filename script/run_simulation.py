@@ -18,6 +18,8 @@ parser.add_option('--rcidFile', type=str, default='ZTF_corners_rcid.txt',
                   help='rcid file name [%default]')
 parser.add_option('--csvFile', type=str, default='2018_all_logs_from_dr1_rcid_zp_from_masci.csv',
                   help='csv file name for observation [%default]')
+parser.add_option('--ZTF_Fields', type=str, default='ZTF_Fields.txt',
+                  help='ZTF field file name for observation [%default]')
 parser.add_option('--DataFileName', type=str, default='Data.hdf5',
                   help='Data file name [%default]')
 parser.add_option('--MetaFileName', type=str, default='Meta.hdf5',
@@ -52,6 +54,7 @@ folder_dir = opts.folder_dir
 sfd98File = opts.sfd98File
 rcidFile = opts.rcidFile
 csvFile = opts.csvFile
+ZTF_Fields = opts.ZTF_Fields
 DataFileName = opts.DataFileName
 MetaFileName = opts.MetaFileName
 outputDir = opts.outputDir
@@ -68,7 +71,7 @@ threshold = opts.threshold
 
 # lc simulation
 lc = Simul_lc(folder_dir=folder_dir, sfd98File=sfd98File, rcidFile=rcidFile,
-              csvFile=csvFile, z_range=(zmin, zmax), dec_range=(decmin, decmax),
+              csvFile=csvFile, ZTF_Fields=ZTF_Fields, z_range=(zmin, zmax), dec_range=(decmin, decmax),
               n_det=ndet, ntransient=ntransient, seed=seed, threshold=threshold)()
 
 # write LC and metadata
