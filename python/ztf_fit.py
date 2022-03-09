@@ -6,9 +6,12 @@ import numpy as np
 class SN_fit:
     "Definition of a class fit lightcurve"
     
-    def __init__(self, lc, list_param = ['z', 'z_err', 't0', 't0_err', 'x0', 'x0_err', 'x1', 'x1_err', 'c', 'c_err',
-                                       'chisq', 'ndof', 'z_t0_cov', 'z_x0_cov', 'z_x1_cov', 'z_c_cov',
-                                       'x0_t0_cov','x0_x1_cov', 'x0_c_cov', 't0_x1_cov', 't0_c_cov', 'x1_c_cov']):
+    def __init__(self, lc, param = ['z', 't0', 'x0', 'x1', 'c'] ,list_param = ['z', 'z_err', 't0', 't0_err', 'x0', 'x0_err', 
+                                                                             'x1', 'x1_err', 'c', 'c_err','chisq', 'ndof',
+                                                                             'z_t0_cov', 'z_x0_cov','z_x1_cov',
+                                                                             'z_c_cov','x0_t0_cov','x0_x1_cov',
+                                                                             'x0_c_cov', 't0_x1_cov', 't0_c_cov', 'x1_c_cov'],
+                 z_bound_err = 0.0001):
         """
         Parameters
         ----------
@@ -17,12 +20,18 @@ class SN_fit:
         z_bounds : dict
             redshift range for the fit (default = {'z':(0.01, 0.1)}).
         """
-        
+        dustmap = sncosmo.OD94Dust()
         self.lc = lc
-        self.model = sncosmo.Model(source='salt2-extended') #version='1.0'
-        self.param = ['z', 't0', 'x0', 'x1', 'c']
-        self.z_bounds = {'z':(lc.meta['z']-0.001, lc.meta['z']+0.001)}
+        self.source = sncosmo.get_source('salt2-extended', version='1.0')
+        self.model = sncosmo.Model(source=self.source, effects=[dustmap, dustmap],
+                                                       effect_names=['host', 'mw'],
+                                                       effect_frames=['rest', 'obs'])
+        self.model.set(mwebv=lc.meta['mwebv'])
+        self.param = param
+        self.z_bounds = {'z':(lc.meta['z']-z_bound_err, lc.meta['z']+z_bound_err)}
         self.list_param = list_param
+        if not 'z' in self.param:
+            self.model.set(z=lc.meta['z'])
     
     def fit_sn(self):
         """
@@ -76,7 +85,7 @@ class SN_fit:
 class SN_fit_tab:
     "Definition of a class which add different result from sncosmo.fit_lc to your meta data file"
     
-    def __init__(self, metaTable, dataFile, inputDir = 'ZTF/dataLC'):
+    def __init__(self, metaTable, dataFile, param = ['z', 't0', 'x0', 'x1', 'c']):
         """
         Parameters
         ----------
@@ -84,9 +93,9 @@ class SN_fit_tab:
             AstropyTable of the meta data of your selected light curve (pass selec == 1).
         """
         
+        self.param = param
         self.metaTable = metaTable
         self.dataFile = dataFile
-        self.inputDir = inputDir
         self.keys = []
         self.list1 = ['z', 't0', 'x0', 'x1', 'c']
         self.list2 = ['z_fit', 't0_fit', 'x0_fit', 'x1_fit', 'c_fit']
@@ -102,10 +111,10 @@ class SN_fit_tab:
         for i, row in enumerate(self.metaTable):
             path = row['path']
             self.keys.append(path)
-            data = Read_LightCurve(file_name=self.dataFile, inputDir=self.inputDir)
+            data = Read_LightCurve(file_name=self.dataFile)
             lc = data.Read_file(path=path)
         
-            fit = SN_fit(lc)
+            fit = SN_fit(lc, param=self.param)
             try:
                 result, fitted_model = fit.fit_sn()
                 fl = fit.add()

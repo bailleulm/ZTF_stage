@@ -111,10 +111,7 @@ class Read_LightCurve:
             Name of the hdf5 file that you want to read.
         """
         self.file_name = file_name
-        home_dir = os.environ.get('HOME')
-        folder_dir = os.path.join(home_dir, inputDir)
-
-        self.file = h5py.File('{}/{}'.format(folder_dir, file_name), 'r')
+        self.file = h5py.File('{}/{}'.format(inputDir, file_name), 'r')
 
     def get_path(self):
 

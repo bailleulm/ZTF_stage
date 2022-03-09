@@ -6,7 +6,7 @@ import os
 class Simul_lc:
     "Definition of a class that simule light curve"
     
-    def __init__(self, folder_dir, sfd98File, rcidFile, csvFile,  z_range=(0.01, 0.1), dec_range=(-30, 90), n_det=1, 
+    def __init__(self, folder_dir, sfd98File, rcidFile, csvFile, ZTF_Fields, z_range=(0.01, 0.1), dec_range=(-30, 90), n_det=1, 
                  ntransient=11, seed=70, threshold=1):
         """
         Parameters
@@ -26,12 +26,15 @@ class Simul_lc:
         threshold : int
             S/N requirement for detection (default=1).
         """
+        self.home_dir = os.environ.get('HOME')
+        self.folder_dir = os.path.join(self.home_dir, folder_dir)
         
-        self.sfd98_dir = os.path.join(folder_dir, sfd98File)
-        self.rcid_dir = os.path.join(folder_dir, rcidFile)
-        self.csv_dir = os.path.join(folder_dir, csvFile)
+        self.sfd98_dir = os.path.join(self.folder_dir, sfd98File)
+        self.rcid_dir = os.path.join(self.folder_dir, rcidFile)
+        self.csv_dir = os.path.join(self.folder_dir, csvFile)
+        self.ZTF_Fields_dir = os.path.join(self.folder_dir, ZTF_Fields)
         
-        self.fields = sst.load_ztf_fields()
+        self.fields = sst.load_ztf_fields(filename=self.ZTF_Fields_dir)
         self.ccds = sst.load_ztf_ccds(filename=self.rcid_dir, num_segs=64) #it's rcid
         
         self.obs = pd.read_csv(self.csv_dir)
