@@ -1,8 +1,8 @@
-col,lim_col,type,op1
-phase,0,int,operator.le
-phase,0,int,operator.ge
-phase,-10,int,operator.le
-phase,20,int,operator.ge
-band,ztfr,str,operator.eq
-band,ztfg,str,operator.eq
-band,ztfi,str,operator.eq
+name,col,lim_col,type,op1
+n_phase_neg,phase,0,int,operator.le
+n_phase_pos,phase,0,int,operator.ge
+n_phase_min,phase,-10,int,operator.le
+n_phase_max,phase,20,int,operator.ge
+n_r_band,band,ztfr,str,operator.eq
+n_g_band,band,ztfg,str,operator.eq
+n_i_band,band,ztfi,str,operator.eq
