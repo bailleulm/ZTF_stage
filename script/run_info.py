@@ -1,5 +1,5 @@
 from optparse import OptionParser
-from ztf_info import get_info
+from ztf_info import get_info, get_selec
 from ztf_hdf5 import Read_LightCurve
 from astropy.table import Table, hstack, vstack
 import astropy
@@ -17,8 +17,10 @@ def complete_lc(lc, snr):
 parser = OptionParser()
 
 ## Folder directory and Files names ##
-parser.add_option('--csvFile', type=str, default='ztf_stage/csv/selection_tab.csv',
+parser.add_option('--csvInfo', type=str, default='ztf_stage/csv/selection_tab.csv',
                   help='csv file def [%default]')
+parser.add_option('--csvSelect', type=str, default='ztf_stage/csv/seuil_name_selec.csv',
+                  help='csv selec def [%default]')
 parser.add_option('--metaFile', type=str, default='Meta.hdf5',
                   help='meta file name to process [%default]')
 parser.add_option('--metaDir', type=str, default='dataLC',
@@ -32,7 +34,8 @@ parser.add_option('--outputDir', type=str, default='dataLC',
 
 opts, args = parser.parse_args()
 
-csvFile = opts.csvFile
+csvInfo = opts.csvInfo
+csvSelect = opts.csvSelect
 metaFile = opts.metaFile
 metaDir = opts.metaDir
 snr = opts.snr
@@ -40,9 +43,10 @@ infoFile = opts.infoFile
 outDir = opts.outputDir
 
 # load csv  file in Table
-csv_tab = Table.read(csvFile)
-
+csv_tab = Table.read(csvInfo)
+csv_tab_select = Table.read(csvSelect)
 print(csv_tab)
+print(csv_tab_select)
 
 # read metadata
 read_meta = Read_LightCurve(file_name=metaFile, inputDir=metaDir)
@@ -72,8 +76,13 @@ for meta in metadata:
         tt = hstack([tt, tb])
     restab = vstack([restab, tt])
 
-print(restab)
+
+# apply selection here
+idx = True
+print('baoo', csv_tab_select)
+seltab = get_selec(restab, csv_tab_select)
+
 # writing result
 fOut = '{}/{}'.format(outDir, infoFile)
 astropy.io.misc.hdf5.write_table_hdf5(
-    restab, fOut, path='meta', append=True, overwrite=True, serialize_meta=False)
+    seltab, fOut, path='meta', append=True, overwrite=True, serialize_meta=False)

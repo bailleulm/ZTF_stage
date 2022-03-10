@@ -29,3 +29,21 @@ def get_info(data, info, selec=False):
         res[row['name']] = [len(new_tab)]
 
     return res
+
+
+def get_selec(tab, csv_tab):
+
+    idx = True
+    tab['sel'] = 0
+    for row in csv_tab:
+        col = row['name_selec']
+        op = eval(row['op'])
+        type_ = eval(row['type'])
+        lim = type_(row['seuil'])
+        idx &= op(tab[col], lim)
+
+    tab[idx]['sel'] = 1
+
+    print('ahhho', tab)
+
+    return tab
