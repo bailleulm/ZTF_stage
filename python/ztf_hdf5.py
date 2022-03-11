@@ -1,6 +1,6 @@
 import h5py
 import ast
-from astropy.table import QTable, Table, Column, vstack
+from astropy.table import Table, Column, vstack
 import astropy.units as u
 import astropy
 import numpy as np
@@ -49,7 +49,7 @@ class Write_LightCurve:
         self.file_data = h5py.File('{}'.format(self.data_file), 'w')
         self.file_meta = h5py.File('{}'.format(self.meta_file), 'w')
 
-    def write_data(self, lc, path='SN', serialize_meta=True):
+    def write_data(self, lc, meta_rejected, path='SN', serialize_meta=True):
         """
         Parameters
         ----------
@@ -62,8 +62,8 @@ class Write_LightCurve:
             meta = lc.meta
             lc.meta = dict(zip(self.List, [meta[k] for k in self.List]))
 
-            astropy.io.misc.hdf5.write_table_hdf5(lc, self.file_data, path=path, append=True,
-                                                  overwrite=True, serialize_meta=serialize_meta)
+            astropy.io.misc.hdf5.write_table_hdf5(
+                lc, self.file_data, path=path, overwrite=True, serialize_meta=serialize_meta)
 
             meta = dict(
                 zip(lc.meta.keys(), [[lc.meta[k]] for k in lc.meta.keys()]))
@@ -74,8 +74,8 @@ class Write_LightCurve:
             print('lc is not an astropy.table.table.Table type', type(lc))
             for i, lc_b in enumerate(lc):
                 path = '{}_{}'.format(self.path_prefix, i)
-                self.write_data(lc_b, path)
-            self.write_meta(lc.meta_rejected)
+                self.write_data(lc_b, None, path)
+            self.write_meta(meta_rejected)
 
     def write_meta(self, meta_rej):
         """
