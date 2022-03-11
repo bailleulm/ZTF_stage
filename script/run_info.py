@@ -1,25 +1,12 @@
 from optparse import OptionParser
-from ztf_info import get_info, get_selec
-from ztf_hdf5 import Read_LightCurve
-from astropy.table import Table, hstack, vstack
+from ztf_info import get_selec, Info
 import astropy
-
-
-def complete_lc(lc, snr):
-
-    lc['SNR'] = lc['flux'] / lc['fluxerr']
-    lc['phase'] = (lc['time'] - lc.meta['t0']) / (1-lc.meta['z'])
-    idx = lc['SNR'] >= snr
-
-    return lc[idx]
-
 
 parser = OptionParser()
 
-## Folder directory and Files names ##
-parser.add_option('--csvInfo', type=str, default='ztf_stage/csv/selection_tab.csv',
+parser.add_option('--csvInfo', type=str, default='ztf_stage/csv/info.csv',
                   help='csv file def [%default]')
-parser.add_option('--csvSelect', type=str, default='ztf_stage/csv/seuil_name_selec.csv',
+parser.add_option('--csvSelect', type=str, default='ztf_stage/csv/selection.csv',
                   help='csv selec def [%default]')
 parser.add_option('--metaFile', type=str, default='Meta.hdf5',
                   help='meta file name to process [%default]')
@@ -43,44 +30,18 @@ infoFile = opts.infoFile
 outDir = opts.outputDir
 
 # load csv  file in Table
-csv_tab = Table.read(csvInfo)
-csv_tab_select = Table.read(csvSelect)
-print(csv_tab)
-print(csv_tab_select)
+tab_info = astropy.io.ascii.read(csvInfo, format='csv', comment='#')
+tab_select = astropy.io.ascii.read(csvSelect, format='csv', comment='#')
 
-# read metadata
-read_meta = Read_LightCurve(file_name=metaFile, inputDir=metaDir)
-metadata = read_meta.get_table(path='meta')
+# get infos
+info = Info(metaFile, metaDir, tab_info, snr)
+restab = info()
 
-print(metadata.meta)
+# apply selection
+seltab = get_selec(restab, tab_select)
 
-lcDir = metadata.meta['directory']
-lcName = metadata.meta['file_name']
-
-read_lc = Read_LightCurve(file_name=lcName, inputDir=lcDir)
-
-restab = Table()
-restab.meta = metadata.meta
-for meta in metadata:
-    tt = Table(meta)
-    path = meta['path']
-    if 'bad' not in path:
-        lc = read_lc.get_table(path)
-        lc = complete_lc(lc, snr)
-        res = get_info(lc, csv_tab)
-        tt = hstack([tt, res])
-    else:
-        names = csv_tab['name'].tolist()
-        vals = [[-1]]*len(csv_tab)
-        tb = Table(vals, names=names)
-        tt = hstack([tt, tb])
-    restab = vstack([restab, tt])
-
-
-# apply selection here
-idx = True
-print('baoo', csv_tab_select)
-seltab = get_selec(restab, csv_tab_select)
+print(seltab['n_phase_neg', 'n_phase_pos',
+             'n_phase_min', 'n_phase_max', 'sel'])
 
 # writing result
 fOut = '{}/{}'.format(outDir, infoFile)
