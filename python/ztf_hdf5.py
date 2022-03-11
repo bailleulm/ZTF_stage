@@ -1,6 +1,6 @@
 import h5py
 import ast
-from astropy.table import QTable, Table, Column, vstack
+from astropy.table import Table, Column, vstack
 import astropy.units as u
 import astropy
 import numpy as np
@@ -15,7 +15,7 @@ class Write_LightCurve:
     "Definition of a class that records light curves and/or their meta data in an hdf5 file"
 
     def __init__(self, outputDir='dataLC', file_data='Data.hdf5', file_meta='Meta.hdf5', path_prefix='SN', List=['z', 't0',
-                                                           'x0', 'x1', 'c', 'mwebv','ra', 'dec', 'mwebv_sfd98', 'idx_orig']):
+                                                                                                                 'x0', 'x1', 'c', 'mwebv', 'ra', 'dec', 'mwebv_sfd98', 'idx_orig']):
         """
         Parameters
         --------------
@@ -35,6 +35,7 @@ class Write_LightCurve:
         self.outputDir = outputDir
         self.path_prefix = path_prefix
 
+        self.data_name = file_data
         self.meta_file = os.path.join(self.outputDir, file_meta)
         self.data_file = os.path.join(self.outputDir, file_data)
 
@@ -48,7 +49,7 @@ class Write_LightCurve:
         self.file_data = h5py.File('{}'.format(self.data_file), 'w')
         self.file_meta = h5py.File('{}'.format(self.meta_file), 'w')
 
-    def write_data(self, lc, path='SN', serialize_meta=True):
+    def write_data(self, lc, meta_rejected, path='SN', serialize_meta=True):
         """
         Parameters
         ----------
@@ -61,8 +62,8 @@ class Write_LightCurve:
             meta = lc.meta
             lc.meta = dict(zip(self.List, [meta[k] for k in self.List]))
 
-            astropy.io.misc.hdf5.write_table_hdf5(lc, self.file_data, path=path, append=True,
-                                                  overwrite=True, serialize_meta=serialize_meta)
+            astropy.io.misc.hdf5.write_table_hdf5(
+                lc, self.file_data, path=path, overwrite=True, serialize_meta=serialize_meta)
 
             meta = dict(
                 zip(lc.meta.keys(), [[lc.meta[k]] for k in lc.meta.keys()]))
@@ -73,8 +74,8 @@ class Write_LightCurve:
             print('lc is not an astropy.table.table.Table type', type(lc))
             for i, lc_b in enumerate(lc):
                 path = '{}_{}'.format(self.path_prefix, i)
-                self.write_data(lc_b, path)
-            self.write_meta(lc.meta_rejected)
+                self.write_data(lc_b, None, path)
+            self.write_meta(meta_rejected)
 
     def write_meta(self, meta_rej):
         """
@@ -94,7 +95,7 @@ class Write_LightCurve:
             self.Summary = vstack([self.Summary, meta_rej])
 
         self.Summary.meta["directory"] = self.outputDir
-        self.Summary.meta["file_name"] = self.meta_file
+        self.Summary.meta["file_name"] = self.data_name
         print('meta data', self.Summary.meta, self.Summary)
 
         astropy.io.misc.hdf5.write_table_hdf5(self.Summary, self.file_meta, path='meta', append=True,
@@ -114,13 +115,18 @@ class Read_LightCurve:
         self.file = h5py.File('{}/{}'.format(inputDir, file_name), 'r')
 
     def get_path(self):
+        """
+        Method to return the list of keys of the hdf5 file
 
-        K = []
-        with self.file as f:
-            K.append([key for key in f.keys()])
-        return K
+        Returns
+        ----------
+        list(str): list of keys (aka paths)
 
-    def Read_file(self, path):
+        """
+
+        return list(self.file.keys())
+
+    def get_table(self, path):
         """
         Parameters
         ----------
