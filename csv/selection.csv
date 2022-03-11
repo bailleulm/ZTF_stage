@@ -1,4 +1,5 @@
-seuil,name_selec,op,type
+# threshold val, selec name, operator, type(threshold)
+thresh,name,op,type
 4,n_phase_neg,operator.ge,int
 10,n_phase_pos,operator.ge,int
 1,n_phase_min,operator.ge,int

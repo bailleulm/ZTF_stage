@@ -1,4 +1,5 @@
-name,col,lim_col,type,op1
+# info name, data col to select,value of selection, type of value, operator
+name,col,thresh,type,op
 n_phase_neg,phase,0,int,operator.le
 n_phase_pos,phase,0,int,operator.ge
 n_phase_min,phase,-10,int,operator.le
