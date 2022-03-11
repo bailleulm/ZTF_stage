@@ -7,7 +7,7 @@ import os
 class Simul_lc:
     "Definition of a class that simule light curve"
 
-    def __init__(self, folder_dir, sfd98File, rcidFile, csvFile, ZTF_Fields, z_range=(0.01, 0.1), dec_range=(-30, 90), n_det=1,
+    def __init__(self, folder_dir, sfd98File, rcidFile, csvFile, ztf_fields, z_range=(0.01, 0.1), dec_range=(-30, 90), n_det=1,
                  ntransient=11, seed=70, threshold=1):
         """
         Parameters
@@ -31,9 +31,9 @@ class Simul_lc:
         self.sfd98_dir = os.path.join(folder_dir, sfd98File)
         self.rcid_dir = os.path.join(folder_dir, rcidFile)
         self.csv_dir = os.path.join(folder_dir, csvFile)
-        self.ZTF_Fields_dir = os.path.join(folder_dir, ZTF_Fields)
+        self.ztf_fields_dir = os.path.join(folder_dir, ztf_fields)
 
-        self.fields = sst.load_ztf_fields(filename=self.ZTF_Fields_dir)
+        self.fields = sst.load_ztf_fields(filename=self.ztf_fields_dir)
         self.ccds = sst.load_ztf_ccds(
             filename=self.rcid_dir, num_segs=64)  # it's rcid
 
