@@ -46,4 +46,4 @@ print(seltab['n_phase_neg', 'n_phase_pos',
 # writing result
 fOut = '{}/{}'.format(outDir, infoFile)
 astropy.io.misc.hdf5.write_table_hdf5(
-    seltab, fOut, path='meta', append=True, overwrite=True, serialize_meta=False)
+    seltab, fOut, path='meta', overwrite=True, serialize_meta=False)
