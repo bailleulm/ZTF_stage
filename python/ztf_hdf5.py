@@ -75,7 +75,8 @@ class Write_LightCurve:
             for i, lc_b in enumerate(lc):
                 path = '{}_{}'.format(self.path_prefix, i)
                 self.write_data(lc_b, None, path)
-            self.write_meta(meta_rejected)
+            if meta_rejected is not None and len(meta_rejected) > 0:
+                self.write_meta(meta_rejected)
 
     def write_meta(self, meta_rej):
         """
