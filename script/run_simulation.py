@@ -119,19 +119,20 @@ params['path_prefix'] = path_prefix
 
 # the multiprocessing is done according to ntransients
 
-step = int(ntransient/nproc)
-ffi = [step]*nproc
-lc_dict = multiproc(ffi, params, simu, nproc, gather=False)
+if __name__ == '__main__':
+    step = int(ntransient/nproc)
+    ffi = [step]*nproc
+    lc_dict = multiproc(ffi, params, simu, nproc, gather=False)
 
-# write LC and metadata
-Write = Write_LightCurve(
-    outputDir=outputDir, file_data=lcName, file_meta=metaName, path_prefix=path_prefix)
-rlc = []
-meta_rejected = Table()
-for i, lcl in lc_dict.items():
-    if lcl.meta_rejected is not None:
-        meta_rejected = vstack([meta_rejected, Table(lcl.meta_rejected)])
-    for lc in lcl:
-        rlc.append(lc)
+    # write LC and metadata
+    Write = Write_LightCurve(
+        outputDir=outputDir, file_data=lcName, file_meta=metaName, path_prefix=path_prefix)
+    rlc = []
+    meta_rejected = Table()
+    for i, lcl in lc_dict.items():
+        if lcl.meta_rejected is not None:
+            meta_rejected = vstack([meta_rejected, Table(lcl.meta_rejected)])
+        for lc in lcl:
+            rlc.append(lc)
 
-data = Write.write_data(rlc, meta_rejected)
+    data = Write.write_data(rlc, meta_rejected)
