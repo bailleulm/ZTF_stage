@@ -10,6 +10,7 @@ def simu(index, params, j=0, output_q=None):
     params['ntransient'] = index[0]
     params['seed'] += j
 
+    """
     folder_dir = params['folder_dir']
     sfd98File = params['sfd98File']
     rcidFile = params['rcidFile']
@@ -24,13 +25,19 @@ def simu(index, params, j=0, output_q=None):
     seed = params['seed']
     threshold = params['threshold']
     path_prefix = params['path_prefix']
-
-    # lc simulation
+    color_mean = params['color_mean']
+    color_sigma = params['color_sigma']
+    stretch_mean = params['stretch_mean']
+    stretch_sigma = params['stretch_sigma']
+ 
     lc = Simul_lc(folder_dir=folder_dir, sfd98File=sfd98File, rcidFile=rcidFile,
                   csvFile=csvFile, ztf_fields=ztf_fields, z_range=(
                       zmin, zmax), dec_range=(decmin, decmax),
-                  n_det=ndet, ntransient=ntransient, seed=seed, threshold=threshold)()
+                  n_det=ndet, ntransient=ntransient, seed=seed, threshold=threshold, color_mean=color_mean, color_sigma=color_sigma, stretch_mean=stretch_mean, stretch_sigma=stretch_sigma)()
+    """
 
+    # lc simulation
+    lc = Simul_lc(**params)()
     if output_q is not None:
         return output_q.put({j: lc})
     else:
@@ -78,7 +85,14 @@ parser.add_option('--threshold', type=int, default=1,
                   help='S/N requirement for detection [%default]')
 parser.add_option('--nproc', type=int, default=1,
                   help='number of procs for multiprocessing [%default]')
-
+parser.add_option('--color_mean', type=float, default=0.0,
+                  help='mean color value [%default]')
+parser.add_option('--color_sigma', type=float, default=0.0,
+                  help='sigma color value [%default]')
+parser.add_option('--stretch_mean', type=float, default=0.0,
+                  help='mean stretch value [%default]')
+parser.add_option('--stretch_sigma', type=float, default=0.0,
+                  help='sigma stretch value [%default]')
 opts, args = parser.parse_args()
 
 folder_dir = opts.folder_dir
@@ -100,6 +114,10 @@ ntransient = opts.ntransient
 seed = opts.seed
 threshold = opts.threshold
 nproc = opts.nproc
+color_mean = opts.color_mean
+color_sigma = opts.color_sigma
+stretch_mean = opts.stretch_mean
+stretch_sigma = opts.stretch_sigma
 
 params = {}
 params['folder_dir'] = folder_dir
@@ -107,15 +125,21 @@ params['sfd98File'] = sfd98File
 params['rcidFile'] = rcidFile
 params['csvFile'] = csvFile
 params['ztf_fields'] = ztf_fields
-params['zmin'] = zmin
-params['zmax'] = zmax
-params['decmin'] = decmin
-params['decmax'] = decmax
+#params['zmin'] = zmin
+#params['zmax'] = zmax
+params['zrange'] = (zmin, zmax)
+params['dec_range'] = (decmin, decmax)
+#params['decmin'] = decmin
+#params['decmax'] = decmax
 params['ndet'] = ndet
 params['ntransient'] = ntransient
 params['seed'] = seed
 params['threshold'] = threshold
 params['path_prefix'] = path_prefix
+params['color_mean'] = color_mean
+params['color_sigma'] = color_sigma
+params['stretch_mean'] = stretch_mean
+params['stretch_sigma'] = stretch_sigma
 
 # the multiprocessing is done according to ntransients
 
