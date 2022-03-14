@@ -38,15 +38,16 @@ metaFileOutput = opts.metaFileOutput
 metaDirOutput = opts.metaDirOutput
 nproc = opts.nproc
 
-meta = Read_LightCurve(file_name=metaFileInput, inputDir=metaDirInput)
-metaTable = meta.get_table(path='meta')
+if __name__ == '__main__':
+    meta = Read_LightCurve(file_name=metaFileInput, inputDir=metaDirInput)
+    metaTable = meta.get_table(path='meta')
 
-params = {}
-resfit = multiproc(metaTable, params, fit, nproc)
+    params = {}
+    resfit = multiproc(metaTable, params, fit, nproc)
 
-print(len(metaTable), len(resfit))
+    print(len(metaTable), len(resfit))
 
-# write results in file
-fOut = '{}/{}'.format(metaDirOutput, metaFileOutput)
-astropy.io.misc.hdf5.write_table_hdf5(
-    resfit, fOut, path='meta', overwrite=True, serialize_meta=False)
+    # write results in file
+    fOut = '{}/{}'.format(metaDirOutput, metaFileOutput)
+    astropy.io.misc.hdf5.write_table_hdf5(
+        resfit, fOut, path='meta', overwrite=True, serialize_meta=False)
