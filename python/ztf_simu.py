@@ -8,7 +8,7 @@ class Simul_lc:
     "Definition of a class that simule light curve"
 
     def __init__(self, folder_dir, sfd98File, rcidFile, csvFile, ztf_fields, z_range=(0.01, 0.1), dec_range=(-30, 90), n_det=1,
-                 ntransient=11, seed=70, threshold=1):
+                 ntransient=11, seed=70, threshold=1, **kwargs):
         """
         Parameters
         ----------
@@ -39,7 +39,7 @@ class Simul_lc:
 
         self.obs = pd.read_csv(self.csv_dir)
         self.simul = self.simul_lc(
-            z_range, dec_range, ntransient, seed, n_det, threshold)
+            z_range, dec_range, ntransient, seed, n_det, threshold, **kwargs)
 
     def __call__(self):
         """
@@ -54,9 +54,8 @@ class Simul_lc:
 
         return lc
 
-    def simul_lc(self, z_range, dec_range, ntransient, seed, n_det, threshold):
+    def simul_lc(self, z_range, dec_range, ntransient, seed, n_det, threshold, **kwargs):
 
-        self.obs[self.obs['rcid'] == 26]
         self.obs['field'] = self.obs['field'].astype('int64')
         self.obs['time'] = self.obs['time'] - 2400000.5
 
@@ -69,9 +68,20 @@ class Simul_lc:
         mjd_range = (plan.cadence['time'].min() - 30,
                      plan.cadence['time'].max() + 30)
 
+        transientprop = {}
+        transientprop['lcsimul_func'] = 'basic'
+        transientprop['lcsimul_prop'] = {}
+        transientprop['lcsimul_prop']['color_mean'] = kwargs.pop('color_mean')
+        transientprop['lcsimul_prop']['color_sigma'] = kwargs.pop(
+            'color_sigma')
+        transientprop['lcsimul_prop']['stretch_mean'] = kwargs.pop(
+            'stretch_mean')
+        transientprop['lcsimul_prop']['stretch_sigma'] = kwargs.pop(
+            'stretch_sigma')
+
         tr = simsurvey.get_transient_generator(zrange=z_range, transient='Ia', template='salt2',
                                                dec_range=dec_range, mjd_range=mjd_range, sfd98_dir=self.sfd98_dir,
-                                               ntransient=ntransient, seed=seed)
+                                               ntransient=ntransient, seed=seed, transientprop=transientprop)
 
         survey = simsurvey.SimulSurvey(
             generator=tr, plan=plan, n_det=n_det, threshold=threshold)
