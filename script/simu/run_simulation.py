@@ -2,7 +2,7 @@ from optparse import OptionParser
 from ztf_util import make_dict_from_config, make_dict_from_optparse
 from ztf_simu import Simul_lc
 from ztf_hdf5 import Write_LightCurve
-from ztf_util import multiproc, dump_in_yaml
+from ztf_util import multiproc, dump_in_yaml, checkDir
 from astropy.table import Table, vstack
 
 
@@ -54,6 +54,7 @@ metaName = params['metaName']
 path_prefix = params['path_prefix']
 
 # dump script parameters in yaml file
+checkDir(outputDir)
 nameOut = metaName.replace('.hdf5', '.yaml')
 dump_in_yaml(opts, confDict, outputDir, nameOut, 'simu')
 

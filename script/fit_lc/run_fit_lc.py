@@ -2,7 +2,7 @@ from optparse import OptionParser
 from ztf_fit import SN_fit_tab
 from ztf_hdf5 import Read_LightCurve
 import astropy
-from ztf_util import multiproc, dump_in_yaml
+from ztf_util import multiproc, dump_in_yaml, checkDir
 from ztf_util import make_dict_from_config, make_dict_from_optparse
 
 
@@ -60,6 +60,7 @@ metaDirOutput = opts.metaDirOutput
 nproc = opts.nprocFit
 
 # dump parameters in yaml file
+checkDir(metaDirOutput)
 nameOut = metaFileOutput.replace('.hdf5', '.yaml')
 dump_in_yaml(opts, confDict, metaDirOutput, nameOut, 'fit')
 

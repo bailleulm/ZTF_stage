@@ -1,7 +1,7 @@
 from optparse import OptionParser
 from ztf_info import get_selec, Info
 from ztf_util import make_dict_from_config, make_dict_from_optparse
-from ztf_util import dump_in_yaml
+from ztf_util import dump_in_yaml, checkDir
 import astropy
 
 # get all possible parameters and put in a dict
@@ -30,6 +30,7 @@ infoFile = opts.infoFile
 outDir = opts.outputDirInfo
 
 # dump parameters in yaml file
+checkDir(outDir)
 nameOut = infoFile.replace('.hdf5', '.yaml')
 dump_in_yaml(opts, confDict, outDir, nameOut, 'info')
 
