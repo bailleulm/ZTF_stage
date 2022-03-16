@@ -46,7 +46,7 @@ print(params)
 
 ntransient = params['ntransient']
 nproc = params['nprocSimu']
-params['zrange'] = (params['zmin'], params['zmax'])
+params['z_range'] = (params['zmin'], params['zmax'])
 params['dec_range'] = (params['decmin'], params['decmax'])
 outputDir = params['outputDirSimu']
 lcName = params['lcName']
