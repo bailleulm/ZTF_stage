@@ -15,7 +15,7 @@ class Write_LightCurve:
     "Definition of a class that records light curves and/or their meta data in an hdf5 file"
 
     def __init__(self, outputDir='dataLC', file_data='Data.hdf5', file_meta='Meta.hdf5', path_prefix='SN', List=['z', 't0',
-                                                                                                                 'x0', 'x1', 'c', 'mwebv', 'ra', 'dec', 'mwebv_sfd98', 'idx_orig']):
+                                                                                                                 'x0', 'x1', 'c', 'mwebv', 'ra', 'dec', 'mwebv_sfd98', 'idx_orig'], **kwargs):
         """
         Parameters
         --------------
