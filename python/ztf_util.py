@@ -5,6 +5,7 @@ from astropy.table import Table, vstack
 import operator
 import yaml
 from collections import MutableMapping
+import os
 
 
 def multiproc(data, params, func, nproc, gather=True):
@@ -231,3 +232,12 @@ def dump_in_yaml(opts, confDict, dirOut, nameOut, prefix='simu'):
     yaml_name = '{}/{}'.format(dirOut, nameOut)
     with open(yaml_name, 'w') as f:
         data = yaml.dump(yaml_params, f)
+
+
+def checkDir(outDir):
+    """
+    function to check whether a directory exist
+    and create it if necessary
+    """
+    if not os.path.isdir(outDir):
+        os.makedirs(outDir)
