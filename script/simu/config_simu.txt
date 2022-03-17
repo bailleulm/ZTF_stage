@@ -14,6 +14,8 @@ path_prefix SN str #path prefix for hdf5
 ## simulation parameters
 zmin 0.01 float #min redshift
 zmax 0.1 float #max redshift
+ramin 0. float #min ra
+ramax 360. float #max ra
 decmin -30. float #min declinaison
 decmax 90. float #max declinaison
 ndet 1 int #required number of detections
