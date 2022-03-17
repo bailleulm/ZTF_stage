@@ -49,9 +49,9 @@ class Simul_lc:
             Collection of simulated light curve, to cheak the firt lc : lc[0]
         """
         survey = self.simul
-        print(survey)
         lc = survey.get_lightcurves()
 
+        print('light curves', lc.meta)
         return lc
 
     def simul_lc(self, z_range, dec_range, ntransient, seed, n_det, threshold, **kwargs):
