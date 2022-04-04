@@ -20,7 +20,7 @@ class Bokeh_plot:
         self.meta_SN = self.class_SN.get_table(path='meta')
         self.meta_SN['chi'] = self.meta_SN['chisq']/self.meta_SN['ndof']
         
-    def plot1(self, xlim=[0], ylim=[0.1], tooltips=[('SN path','@path'), ('SN chi','@chi')], y_range=(0,0.1),
+    def plot1(self, xlim=[0], ylim=[0.04], tooltips=[('SN path','@path'), ('SN chi','@chi')], y_range=(0,0.1),
              plot_width = 800, plot_height = 600):
 
         selec = self.meta_SN['sel']==1
