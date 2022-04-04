@@ -37,10 +37,10 @@ plot_height = opts.plot_height
 cl = Bokeh_plot(file_name=meta_fileName, inputDir=input_dir)
 
 if opts.verbose:
-    print('You show the plot1')
+    print('You have plotted figure 1')
     output_file(filename="plot1.html", title='$\sigma_{c}$ vs $z$')
     plot1 = cl.plot1()
 else:
-    print('ICI')
+    print('You have plotted figure 2')
     output_file(filename="plot2.html", title='$\sigma_{c}$ vs $z$ for rg ang rgi band')
     plot2 = cl.plot2()
