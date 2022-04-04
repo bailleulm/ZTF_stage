@@ -21,8 +21,8 @@ parser.add_option('--x_range_min', type=float, default=0.0,
                   help='x range min [%default]')
 parser.add_option('--x_range_max', type=float, default=0.2,
                   help='x range max [%default]')
-parser.add_option('-v', action="store_true", dest="verbose", default=True, help='plot the plot1 [%default]')
-parser.add_option("-q", action="store_false", dest="verbose", help='plot the plot2 [%default]')
+parser.add_option('-v', action="store_true", dest="verbose", default=True, help='plot histo with matplotlib [%default]')
+parser.add_option("-q", action="store_false", dest="verbose", help='plot histo with bokeh [%default]')
 
 opts, args = parser.parse_args()
 
@@ -38,9 +38,11 @@ x_range_max = opts.x_range_max
 cl = Histo(metaFitInput=meta_fileName, inputDir=input_dir)
 
 if opts.verbose:
+    print('Plot with matplotlib')
     cl.histo_plt(x=var, bins=bins, range=(x_range_min, x_range_max))
     plt.show()
 else:
+    print('Plot with bokeh')
     output_file(filename="histo.html", title='histo')
     pl = cl.histo_bokeh(x=var, bins=bins, density=True, plot_width=plot_width, plot_height=plot_height, 
                            x_range=(x_range_min, x_range_max))
