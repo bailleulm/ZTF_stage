@@ -57,7 +57,7 @@ class Apply_mask:
             md_ = md_[mask]
         return md_ 
     
-class Z_bins_2:
+class Z_bins:
     "class which calculate the c_err per bins of z"
     
     def __init__(self, metaFitInput='Meta_fit.hdf5', inputDir='dataLC', dico={'variables': {'sel': 'sel',
